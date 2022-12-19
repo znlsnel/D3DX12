@@ -25,3 +25,5 @@ inline void ThrowIfFailed(HRESULT hr)
 }
 
 DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+void CreateCommandObjects();

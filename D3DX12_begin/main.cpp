@@ -16,6 +16,48 @@ int mRtvDescriptorSize;
 int mDsvDescriptorSize;
 int mCbvSrvDescriptorSize;
 unsigned int m4xMsaaQuality = 0;
+
+ComPtr<ID3D12Device> md3dDevice;// = ComPtr<ID3D12Device>();
+ComPtr<IDXGIFactory4> mdxgiFactory;
+ComPtr<ID3D12Fence1> mFence;
+
+ComPtr<ID3D12CommandQueue> mCommandQueue; // 명령 대기열
+ComPtr<ID3D12CommandAllocator> mDirectCmdListAlloc; // 명령 할당자
+ComPtr<ID3D12GraphicsCommandList> mCommandList; // 명령 목록
+
+#pragma region 명령 대기열과 명령 목록 생성
+
+void CreateCommandObjects()
+{
+	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+
+	// CommandQueue 명령 대기열
+	ThrowIfFailed(md3dDevice->CreateCommandQueue(
+		&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
+
+	// CommandAllocator 명령 할당자
+	ThrowIfFailed(md3dDevice->CreateCommandAllocator(
+		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		IID_PPV_ARGS(mDirectCmdListAlloc.GetAddressOf())));
+
+	// CommandList 명령 목록
+	ThrowIfFailed(md3dDevice->CreateCommandList(
+		0,
+		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		mDirectCmdListAlloc.Get(),
+		nullptr, // 그리기 명령 제출할게 없으므로 nullptr
+		IID_PPV_ARGS(mCommandList.GetAddressOf())));
+
+	// 명령 목록을 처음 호출할 때 Resetd을 호출하는데
+	// Reset을 호출하려면 명령 목록이 닫혀있어야 함
+	mCommandList->Close();
+}
+
+#pragma endregion
+
+
 int main() 
 {
 
@@ -28,11 +70,9 @@ int main()
 	#endif
 
 
-	ComPtr<IDXGIFactory4> mdxgiFactory;
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&mdxgiFactory)));
 
 	// 하드웨어 어댑터를 나타내는 장치를 생성
-	ComPtr<ID3D12Device> md3dDevice;// = ComPtr<ID3D12Device>();
 	HRESULT hardwareResult = D3D12CreateDevice(
 		nullptr,
 		D3D_FEATURE_LEVEL_11_0,
@@ -53,7 +93,6 @@ int main()
 	}
 
 #pragma region  DescriptorSize
-	ComPtr<ID3D12Fence1> mFence;
 	ThrowIfFailed(md3dDevice->CreateFence(
 		0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 
