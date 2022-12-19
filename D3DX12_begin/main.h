@@ -9,6 +9,7 @@
 #include <exception>
 #include <d3d12sdklayers.h>
 #include <dxgi1_4.h>
+#include <assert.h>
 
 //#include <dxgi.h>
 //#include <d3d12.h>
@@ -22,3 +23,5 @@ inline void ThrowIfFailed(HRESULT hr)
 	if (FAILED(hr))
 		throw std::exception();
 }
+
+DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
