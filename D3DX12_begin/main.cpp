@@ -6,24 +6,23 @@ using namespace Microsoft::WRL;
 // Cbv : Constant buffer view 
 // Srv : Shader resource view
 // Uav : Unordered access view (순서 없는 접근 )
+int mRtvDescriptorSize;
+int mDsvDescriptorSize;
+int mCbvSrvDescriptorSize;
 
 // stencill buffer란 ?
 // 특정 픽셀들이 후면버퍼에 기록되지 않도록 하는 버퍼
 // ex) 그림자, 거울 랜더링시 사용됨
 
-
-int mRtvDescriptorSize;
-int mDsvDescriptorSize;
-int mCbvSrvDescriptorSize;
-unsigned int m4xMsaaQuality = 0;
-
 ComPtr<ID3D12Device> md3dDevice;// = ComPtr<ID3D12Device>();
 ComPtr<IDXGIFactory4> mdxgiFactory;
 ComPtr<ID3D12Fence1> mFence;
-
+ComPtr<IDXGISwapChain> mSwapChain;
 ComPtr<ID3D12CommandQueue> mCommandQueue; // 명령 대기열
 ComPtr<ID3D12CommandAllocator> mDirectCmdListAlloc; // 명령 할당자
 ComPtr<ID3D12GraphicsCommandList> mCommandList; // 명령 목록
+
+
 
 #pragma region 명령 대기열과 명령 목록 생성
 
@@ -57,17 +56,49 @@ void CreateCommandObjects()
 
 #pragma endregion
 
+#pragma region  교환 사슬의 서술과 생성
+DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+void CreateSwapChain()
+{
+	mSwapChain.Reset();
+
+	DXGI_SWAP_CHAIN_DESC sd;
+	sd.BufferDesc.Width = mClientWidth;
+	sd.BufferDesc.Height = mClientHeight;
+	sd.BufferDesc.RefreshRate.Denominator = 1; // 1분에
+	sd.BufferDesc.RefreshRate.Numerator = 60; // 60번
+	sd.BufferDesc.Format = mBackBufferFormat;
+	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED; // 픽셀 순서 상관없이 출력
+	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED; // 스케일링 지정X (확장 배율, 디스플레이 중앙에 위치하게 하는등의 방법도 있음)
+	sd.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+	sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+	sd.Windowed = true; // 창모드
+	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	//이 플래그를 사용하여 비트 블록 전송 모델을 지정IDXGISwapChain1::P resent1을 호출 후 DXGI가 백 버퍼의 콘텐츠를 삭제하도록 지정
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	// 창모드에서 정체 화면 모드로 전환하면 응용 프로그램의 창 크기랑 일치하게 디스플레이 모드가 변경됨
+
+	ThrowIfFailed(mdxgiFactory->CreateSwapChain(
+		mCommandQueue.Get(), // 명령 대기열의 포인터를 반환
+		&sd,
+		mSwapChain.GetAddressOf() // 포인터의 주소값을 반환
+	));
+
+}
+#pragma endregion
+
 
 int main() 
 {
+#pragma region 장치 생성
 
-	#if defined(DEBUG) || defined(_DEBUG)
+#if defined(DEBUG) || defined(_DEBUG)
 	{ // 디버그층 활성화
 		ComPtr<ID3D12Debug> debugController;
 		ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
 		debugController->EnableDebugLayer();
 	}
-	#endif
+#endif
 
 
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&mdxgiFactory)));
@@ -91,6 +122,8 @@ int main()
 			IID_PPV_ARGS(&md3dDevice)
 		));
 	}
+
+#pragma endregion
 
 #pragma region  DescriptorSize
 	ThrowIfFailed(md3dDevice->CreateFence(
@@ -123,6 +156,10 @@ int main()
 	
 #pragma endregion
 
+#pragma region 교환 사슬의 서술과 생성
 
+	
+
+#pragma endregion
 
 }

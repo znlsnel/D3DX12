@@ -24,6 +24,16 @@ inline void ThrowIfFailed(HRESULT hr)
 		throw std::exception();
 }
 
-DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 void CreateCommandObjects();
+void CreateSwapChain();
+
+int mClientWidth = 800;
+int mClientHeight = 800;
+
+bool m4xMsaaState = false;
+unsigned int m4xMsaaQuality = 0;
+
+
+
+
