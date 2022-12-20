@@ -14,7 +14,16 @@ int mCbvSrvDescriptorSize;
 // 특정 픽셀들이 후면버퍼에 기록되지 않도록 하는 버퍼
 // ex) 그림자, 거울 랜더링시 사용됨
 
+D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()
+{
+	return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+}
+
 DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+
+#pragma region  COM
 
 ComPtr<ID3D12Device> md3dDevice;// = ComPtr<ID3D12Device>();
 ComPtr<IDXGIFactory4> mdxgiFactory;
@@ -26,6 +35,12 @@ ComPtr<ID3D12GraphicsCommandList> mCommandList; // 명령 목록
 ComPtr<ID3D12DescriptorHeap> mRtvHeap; // render target view Heap
 ComPtr<ID3D12DescriptorHeap> mDsvHeap; // Deap Stencil View Heap
 ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
+ComPtr<ID3D12Resource> mDepthStencilBuffer;
+
+#pragma endregion
+
+D3D12_VIEWPORT vp;
+D3D12_RECT mScissorRect;
 
 int main() 
 {
@@ -199,6 +214,69 @@ int main()
 	}
 #pragma endregion
 
+#pragma region 깊이, 스텐실 버퍼와 뷰 생성
+	D3D12_RESOURCE_DESC depthStencilDesc;
+	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Alignment = 0; 
+	depthStencilDesc.Width = mClientWidth;
+	depthStencilDesc.Height = mClientHeight;
+	depthStencilDesc.DepthOrArraySize = 1;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.Format = mDepthStencilFormat;
+	depthStencilDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+	depthStencilDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
+	D3D12_CLEAR_VALUE optClear;
+	optClear.Format = mDepthStencilFormat;
+	optClear.DepthStencil.Depth = 1.0f;
+	optClear.DepthStencil.Stencil = 0;
+	
+	ThrowIfFailed(md3dDevice->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), // 기본 힙 GPU가 접근할 자원이 담김
+		D3D12_HEAP_FLAG_NONE,
+		&depthStencilDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		&optClear,
+		IID_PPV_ARGS(mDepthStencilBuffer.GetAddressOf())
+	));
+
+	// 전체 자원이 밉맵 수준 0에 대한 서술자를
+	// 해당 자원의 픽셀 형식을 적용해서 생성한다.
+	md3dDevice->CreateDepthStencilView(
+		mDepthStencilBuffer.Get(),
+		nullptr,
+		DepthStencilView()
+	);
+
+	// 자원을 초기 상태에서 깊이 버퍼로 사용할 수 있는 상태로 전이한다.
+	mCommandList->ResourceBarrier(
+		1,
+		&CD3DX12_RESOURCE_BARRIER::Transition(
+			mDepthStencilBuffer.Get(),
+			D3D12_RESOURCE_STATE_COMMON,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE)
+	);
+
+
+
+#pragma endregion
+
+#pragma region 뷰포트 설정
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	vp.Width = static_cast<float>(mClientWidth);
+	vp.Height = static_cast<float>(mClientHeight);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+
+	mCommandList->RSSetViewports(1, &vp);
+#pragma endregion
+
+#pragma region  가위 직사각형 설정
+	mScissorRect = { 0, 0, mClientWidth / 2, mClientHeight / 2 };
+	mCommandList->RSSetScissorRects(1, &mScissorRect);
+#pragma endregion
 
 }
