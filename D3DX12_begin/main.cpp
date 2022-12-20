@@ -14,15 +14,6 @@ int mCbvSrvDescriptorSize;
 // 특정 픽셀들이 후면버퍼에 기록되지 않도록 하는 버퍼
 // ex) 그림자, 거울 랜더링시 사용됨
 
-D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()
-{
-	return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
-}
-
-DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-
 #pragma region  COM
 
 ComPtr<ID3D12Device> md3dDevice;// = ComPtr<ID3D12Device>();
@@ -39,8 +30,25 @@ ComPtr<ID3D12Resource> mDepthStencilBuffer;
 
 #pragma endregion
 
+
+
+D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()
+{
+	return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+}
+
 D3D12_VIEWPORT vp;
 D3D12_RECT mScissorRect;
+
+DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+CD3DX12_HEAP_PROPERTIES properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+CD3DX12_RESOURCE_BARRIER resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+	mDepthStencilBuffer.Get(),
+	D3D12_RESOURCE_STATE_COMMON,
+	D3D12_RESOURCE_STATE_DEPTH_WRITE);
+
 
 int main() 
 {
@@ -233,8 +241,9 @@ int main()
 	optClear.DepthStencil.Depth = 1.0f;
 	optClear.DepthStencil.Stencil = 0;
 	
+
 	ThrowIfFailed(md3dDevice->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), // 기본 힙 GPU가 접근할 자원이 담김
+		&properties, // 기본 힙 GPU가 접근할 자원이 담김
 		D3D12_HEAP_FLAG_NONE,
 		&depthStencilDesc,
 		D3D12_RESOURCE_STATE_COMMON,
@@ -250,13 +259,12 @@ int main()
 		DepthStencilView()
 	);
 
+
+
 	// 자원을 초기 상태에서 깊이 버퍼로 사용할 수 있는 상태로 전이한다.
 	mCommandList->ResourceBarrier(
 		1,
-		&CD3DX12_RESOURCE_BARRIER::Transition(
-			mDepthStencilBuffer.Get(),
-			D3D12_RESOURCE_STATE_COMMON,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE)
+		&resourceBarrier
 	);
 
 
