@@ -50,6 +50,9 @@ CD3DX12_RESOURCE_BARRIER resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 	D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 
+
+
+
 int main() 
 {
 #pragma region 장치 생성
@@ -286,5 +289,41 @@ int main()
 	mScissorRect = { 0, 0, mClientWidth / 2, mClientHeight / 2 };
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
 #pragma endregion
+
+#pragma region 성능 타이머
+	// 정확한 시간 측정을 위해 사용
+
+	{
+		__int64 currTime;
+		QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
+
+		__int64 countsPerSec;
+		QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
+
+		double mSecondsPerCount = 1.0 / (double)countsPerSec;
+	}
+
+	// currTime 을 A라고 하고 그 다음에 QueryPerformanceCounter함수로 얻게되는 값을 B라고 할때
+	// 어떤 작업에 걸린 시간은 (B - A) * mSecondsPerCount 초이다
+
+#pragma endregion
+
+#pragma region GameTimer 클래스
+	// main.h에 기술함
+#pragma endregion
+
+#pragma region	프레임 간 경과 시간
+	// 시간이 얼마나 흘렀는지 알아야함!
+	// x가 n번째 프레임을 랜더링할때 측정한 성능 타이머 값이고
+	// y가 그 이전 프레임에서의 성능 타이머 값이라고 하면
+	// x  - y가 두 프레임 사이의 경과 시간이라고 할 수 있음
+	
+	// main.h의 GameTimer클래스에 기술 TICK 함수
+	
+	// Tick함수 호출
+	// ----- main.h의 Run함수
+	// ----- GameTimer의 Reset함수
+#pragma endregion
+
 
 }
