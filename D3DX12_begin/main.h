@@ -38,8 +38,9 @@ public:
 		mSecondsPerCount = 1.0 / (double)countsPerSec;
 	}
 
-	float TotalTime()const
+	float TotalTime()const 
 	{
+		// 전체 시간을 반환
 		if (mStopped)
 		{
 			return (float)(((mStopTime - mPausedTime) - mBaseTime) * mSecondsPerCount);
@@ -74,6 +75,7 @@ public:
 
 		if (mStopped)
 		{
+			// 일시정지된 시간의 길이 = 재개된 시점의 시간 - 정지된 시점의 시간
 			mPausedTime += (startTime - mStopTime);
 
 			mPrevTime = startTime; // Start이후 Tick에 쓰일 mPrevTime에 시작시간을 넣어줌
@@ -84,12 +86,14 @@ public:
 
 	void Stop()
 	{
+		// 이미 정지 상태면 아무거또 안함
 		if (!mStopped)
 		{
 			__int64 currTime;
 			QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
 
-			mStopTime = currTime; // 멈춘 시간 저장
+			// 현재 시간을 정지 시점 시간으로 지정
+			mStopTime = currTime; 
 			mStopped = true;
 		}
 	} // 타이머를 정지할 때 호출
@@ -126,11 +130,11 @@ private:
 	double mSecondsPerCount;
 	double mDeltaTime;
 
-	__int64 mBaseTime;
-	__int64 mPausedTime;
-	__int64 mStopTime;
-	__int64 mPrevTime;
-	__int64 mCurrTime;
+	__int64 mBaseTime; // 총 시간
+	__int64 mPausedTime; // 일시정지 된 만큼의 시간
+	__int64 mStopTime; // 정지된 시점의 시간
+	__int64 mPrevTime; 
+	__int64 mCurrTime; 
 
 	bool mStopped;
 };

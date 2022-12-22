@@ -325,5 +325,15 @@ int main()
 	// ----- GameTimer의 Reset함수
 #pragma endregion
 
+#pragma region 전체 시간
+	// 응용 프로그램이 시작된 이후에 흐른 시간을 뜻함 (정지된 시간 제외)
+	// 전체 시간을 구현하기 위해 GameTime 클래스는 다음과 같은 멤버 변수를 사용하
+	// mBaseTime, mPausedTime, mStopTime
+
+	// GameTimer 클래스에 설명
+
+	// GameTimer의 인스턴스를 추갈 생성하여 범용 '스톱워치'로 사용하는 것도 얼만든지 가능함
+	// 예를 들어 폭탄의 도화선에 불이 붙었을 때 새 GameTimer인스턴스를 생성하고 TotalTime이 5초가 넘으면 폭탄이 폭발하는 시건을 촉발하는 등으로 활용할 수 있을 것이다.
+#pragma endregion
 
 }
