@@ -336,4 +336,17 @@ int main()
 	// 예를 들어 폭탄의 도화선에 불이 붙었을 때 새 GameTimer인스턴스를 생성하고 TotalTime이 5초가 넘으면 폭탄이 폭발하는 시건을 촉발하는 등으로 활용할 수 있을 것이다.
 #pragma endregion
 
+#pragma region d3dApp
+	HINSTANCE mhAppInst = nullptr; // 응용 프로그램 핸들
+	HWND      mhMainWnd = nullptr; // 주 창 핸들
+	bool      mAppPaused = false;  // 일시 정지된 상태인가?
+	bool      mMinimized = false;  // 최소화된 상태인가?
+	bool      mMaximized = false;  // 최대화된 상태인가?
+	bool      mResizing = false;   // 크기 조정용 테두리를 끌고 있는 상태인가?
+	bool      mFullscreenState = false;// 전체화면 활성화 여부
+
+	// Set true to use 4X MSAA (?.1.8).  The default is false.
+	bool      m4xMsaaState = false;    // 4X MSAA enabled
+	UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA 
+#pragma endregion
 }
