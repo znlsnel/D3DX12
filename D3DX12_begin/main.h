@@ -15,15 +15,17 @@
 #include <d3d12sdklayers.h>
 #include <dxgi1_4.h>
 #include <assert.h>
-
+#include <comdef.h>
+#include <winnt.h>
+#include <math.h>
 
 #include "directx/d3dx12.h"
-
 
 //#include <dxgi.h>
 //#include <ppltasks.h>	// create_task의 경우
 //#include <dxgidebug.h>
 
+#pragma region 장치 초기화 관련
 
 class GameTimer
 {
@@ -139,18 +141,52 @@ private:
 	bool mStopped;
 };
 
+class DxException
+{
+public:
+	DxException() = default;
+	DxException(HRESULT hr, const std::wstring& functionName, const std::wstring& filename, int lineNumber) :
+		ErrorCode(hr),
+		FunctionName(functionName),
+		Filename(filename),
+		LineNumber(lineNumber)
+	{
+	}
 
+	std::wstring ToString()const
+	{
+		// Get the string description of the error code.
+		_com_error err(ErrorCode);
+		std::wstring msg = err.ErrorMessage();
+
+		return FunctionName + L" failed in " + Filename + L"; line " + std::to_wstring(LineNumber) + L"; error: " + msg;
+	}
+
+
+	HRESULT ErrorCode = S_OK;
+	std::wstring FunctionName;
+	std::wstring Filename;
+	int LineNumber = -1;
+};
+
+inline std::wstring AnsiToWString(const std::string& str)
+{
+	WCHAR buffer[512];
+	MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, buffer, 512);
+	return std::wstring(buffer);
+}
 
 inline void ThrowIfFailed(HRESULT hr)
 {
 	// DirectX API 오류를 탐지하기 위해 이 줄에 중단점 설정
+
+	std::wstring wfn = AnsiToWString(__FILE__);
 	if (FAILED(hr))
-		throw std::exception();
+		throw DxException(hr, wfn, wfn, __LINE__);
+	
 }
 
-
-
-
+#pragma region vals
 int mClientWidth = 800;
 int mClientHeight = 800;
 int mCurrBackBuffer = 0;
@@ -164,6 +200,7 @@ GameTimer mTimer;
 
 std::wstring mMainWndCaption = L"d3d App";
 HWND      mhMainWnd = nullptr;
+#pragma endregion
 
 void CalculateFrameStats()
 {
@@ -242,3 +279,10 @@ int Run()
 	}
 	return (int)msg.wParam;
 }
+
+#pragma endregion
+
+
+
+
+#pragma endregion

@@ -55,7 +55,11 @@ CD3DX12_RESOURCE_BARRIER resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 
 int main() 
 {
+
+
 #pragma region 장치 생성
+
+/*
 
 #if defined(DEBUG) || defined(_DEBUG)
 	{ // 디버그층 활성화
@@ -87,10 +91,12 @@ int main()
 			IID_PPV_ARGS(&md3dDevice)
 		));
 	}
+*/
 
 #pragma endregion
 
 #pragma region  DescriptorSize
+	/*
 	ThrowIfFailed(md3dDevice->CreateFence(
 		0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 
@@ -103,9 +109,12 @@ int main()
 	mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 		);
+	
+	*/
 #pragma endregion
 	   
 #pragma region 4X MSAA 품질 수준 지원 점검
+	/*
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
 	msQualityLevels.Format = mBackBufferFormat;
 	msQualityLevels.SampleCount = 4;
@@ -118,12 +127,13 @@ int main()
 		sizeof(msQualityLevels)));
 	m4xMsaaQuality = msQualityLevels.NumQualityLevels;
 	assert(m4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
+	*/
 	
 #pragma endregion
 
 #pragma region 명령 대기열과 명령 목록 생성
 
-
+	/*
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -148,12 +158,14 @@ int main()
 	// 명령 목록을 처음 호출할 때 Resetd을 호출하는데
 	// Reset을 호출하려면 명령 목록이 닫혀있어야 함
 	mCommandList->Close();
+	*/
 	
 
 #pragma endregion
 
 #pragma region  교환 사슬의 서술과 생성
 
+/*
 	mSwapChain.Reset();
 
 	DXGI_SWAP_CHAIN_DESC sd;
@@ -177,12 +189,13 @@ int main()
 		&sd,
 		mSwapChain.GetAddressOf() // 포인터의 주소값을 반환
 	));
+*/
 
 	
 #pragma endregion
 
 #pragma region 서술자 힙 생성
-
+/*
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
 	rtvHeapDesc.NumDescriptors = SwapChainBufferCount; //  Heap desc 수
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -202,11 +215,13 @@ int main()
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 		&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())
 	));
+*/
 	
 #pragma endregion
 
 #pragma region 렌더 대상 뷰(RTV) 생성
 	
+/*
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(
 		mRtvHeap->GetCPUDescriptorHandleForHeapStart());
 	
@@ -223,9 +238,11 @@ int main()
 		// 힙의 다음 항목으로 넘어간다.
 		rtvHeapHandle.Offset(1, mRtvDescriptorSize);
 	}
+*/
 #pragma endregion
 
 #pragma region 깊이, 스텐실 버퍼와 뷰 생성
+/*
 	D3D12_RESOURCE_DESC depthStencilDesc;
 	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	depthStencilDesc.Alignment = 0; 
@@ -261,20 +278,22 @@ int main()
 		nullptr,
 		DepthStencilView()
 	);
-
-
-
 	// 자원을 초기 상태에서 깊이 버퍼로 사용할 수 있는 상태로 전이한다.
 	mCommandList->ResourceBarrier(
 		1,
 		&resourceBarrier
 	);
+*/
+
+
+
 
 
 
 #pragma endregion
 
 #pragma region 뷰포트 설정
+	/*
 	vp.TopLeftX = 0.0f;
 	vp.TopLeftY = 0.0f;
 	vp.Width = static_cast<float>(mClientWidth);
@@ -283,14 +302,18 @@ int main()
 	vp.MaxDepth = 1.0f;
 
 	mCommandList->RSSetViewports(1, &vp);
+	*/
 #pragma endregion
 
 #pragma region  가위 직사각형 설정
+	/*
 	mScissorRect = { 0, 0, mClientWidth / 2, mClientHeight / 2 };
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
+	*/
 #pragma endregion
 
 #pragma region 성능 타이머
+	/*
 	// 정확한 시간 측정을 위해 사용
 
 	{
@@ -305,6 +328,7 @@ int main()
 
 	// currTime 을 A라고 하고 그 다음에 QueryPerformanceCounter함수로 얻게되는 값을 B라고 할때
 	// 어떤 작업에 걸린 시간은 (B - A) * mSecondsPerCount 초이다
+	*/
 
 #pragma endregion
 
@@ -337,6 +361,7 @@ int main()
 #pragma endregion
 
 #pragma region d3dApp
+	/*
 	HINSTANCE mhAppInst = nullptr; // 응용 프로그램 핸들
 	HWND      mhMainWnd = nullptr; // 주 창 핸들
 	bool      mAppPaused = false;  // 일시 정지된 상태인가?
@@ -348,5 +373,14 @@ int main()
 	// Set true to use 4X MSAA (?.1.8).  The default is false.
 	bool      m4xMsaaState = false;    // 4X MSAA enabled
 	UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA 
+	*/
 #pragma endregion
+
+
+#pragma region DX_WIN API
+
+#pragma endregion
+
+
+
 }
