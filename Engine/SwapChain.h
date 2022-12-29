@@ -1,5 +1,10 @@
 #pragma once
 
+//	-----------------------------------------------------------------------------------
+//    |			descriptorHeap을 SwapChain에 병합	               |
+//	-----------------------------------------------------------------------------------
+
+
 // 교환 사슬
 // [외주 과정]
 // - 현재 게임 세상에 있는 상황을 묘사
@@ -25,34 +30,42 @@ class SwapChain
 {
 public:
 	void Init(const WindowInfo& info, 
+			ComPtr<ID3D12Device> device,
 			ComPtr<IDXGIFactory> dxgi, 
 			ComPtr<ID3D12CommandQueue> cmdQueue);
 
 	void Present();
 	void SwapIndex();
 	
-	ComPtr<IDXGISwapChain> GetSwapChain() 
-	{ 
-		return _swapChain; 
-	}
+	ComPtr<IDXGISwapChain> GetSwapChain() { 
+		return _swapChain; }
 
 	ComPtr<ID3D12Resource> GetRenderTarget(int32 index) { 
-		return _renderTargets[_backBufferIndex]; 
-	}
+		return _rtvBuffer[_backBufferIndex]; }
 
-	uint32 GetCurrentBackBufferIndex() 
-	{ 
-		return _backBufferIndex; 
-	}
+	uint32 GetCurrentBackBufferIndex() { 
+		return _backBufferIndex; }
 
-	ComPtr<ID3D12Resource> GetCurrentBackBufferResource() 
-	{ 
-		return _renderTargets[_backBufferIndex];
-	}
+	ComPtr<ID3D12Resource> GetBackRTVBuffer() { 
+		return _rtvBuffer[_backBufferIndex];}
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetBackRTVHandle() {
+		return _rtvHandle[_backBufferIndex];}
 
 private:
-	ComPtr<IDXGISwapChain> _swapChain;
-	ComPtr<ID3D12Resource> _renderTargets[SWAP_CHAIN_BUFFER_COUNT];
-	uint32 _backBufferIndex = 0; // 현재 backBuffer의 Index번호
+	void CreateSwapChain(const WindowInfo& info,
+		ComPtr<IDXGIFactory> dxgi,
+		ComPtr<ID3D12CommandQueue> cmdQueue);
+	void CreateRtv(ComPtr<ID3D12Device> device);
+
+private:
+	ComPtr<IDXGISwapChain>				_swapChain;
+
+	ComPtr<ID3D12Resource>				_rtvBuffer[SWAP_CHAIN_BUFFER_COUNT];
+	ComPtr<ID3D12DescriptorHeap>		_rtvHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE		_rtvHandle[SWAP_CHAIN_BUFFER_COUNT];
+	
+
+	uint32				 _backBufferIndex = 0; // 현재 backBuffer의 Index번호
 };
 

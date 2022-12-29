@@ -1,4 +1,11 @@
 #pragma once
+
+#include "Device.h"
+#include "CommandQueue.h"
+#include "SwapChain.h"
+#include "RootSignature.h"
+#include "Mesh.h"
+#include "Shader.h"
 class Engine
 {
 public:
@@ -6,34 +13,29 @@ public:
 	void Init(const WindowInfo& info);
 	void Render();
 
+public:
+	shared_ptr<Device> GetDevice() { return _device; }
+	shared_ptr<CommandQueue> GetCmdQueue() { return _cmdQueue; }
+	shared_ptr<SwapChain> GetSwapChain() { return _swapChain; }
+	shared_ptr<RootSignature> GetRootSignature() { return _rootSignature; }
+public:
 	void RenderBegin(); // 요청사항들을 넣어주는 것
 	void RenderEnd(); // 쌓아 놓은 요청 사항들을 GPU로 넘기는 것
 	
 	void ResizeWindow(int32 width, int32 height);
 
 private:
-	//  그려질 화면 크기 관련
+	//  그려질 화면 크기 관련----------------------
 	WindowInfo _window;
 	D3D12_VIEWPORT _viewport = {};
-
-		/*
-		typedef struct D3D12_VIEWPORT
-		{
-			FLOAT TopLeftX;
-			FLOAT TopLeftY;
-			FLOAT Width;
-			FLOAT Height;
-			FLOAT MinDepth;
-			FLOAT MaxDepth;
-		} 	D3D12_VIEWPORT;
-		*/
-
 	D3D12_RECT _scissorRect = {};
+	//-------------------------------------------------------
 
-	shared_ptr<class Device> _device;
-	shared_ptr<class CommandQueue> _cmdQueue;
-	shared_ptr<class SwapChain> _swapChain;
-	shared_ptr<class DescriptorHeap> _descHeap;
+
+	shared_ptr<Device> _device;
+	shared_ptr<CommandQueue> _cmdQueue;
+	shared_ptr<SwapChain> _swapChain;
+	shared_ptr<RootSignature> _rootSignature;
 
 };
 

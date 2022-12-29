@@ -3,10 +3,12 @@ c:\development\git\d3dx12\output\engine.pdb
 c:\development\git\d3dx12\output\engine.idb
 c:\development\git\d3dx12\engine\x64\debug\pch.obj
 c:\development\git\d3dx12\engine\x64\debug\swapchain.obj
+c:\development\git\d3dx12\engine\x64\debug\shader.obj
+c:\development\git\d3dx12\engine\x64\debug\rootsignature.obj
+c:\development\git\d3dx12\engine\x64\debug\mesh.obj
 c:\development\git\d3dx12\engine\x64\debug\enginepch.obj
 c:\development\git\d3dx12\engine\x64\debug\engine.obj
 c:\development\git\d3dx12\engine\x64\debug\device.obj
-c:\development\git\d3dx12\engine\x64\debug\descriptorheap.obj
 c:\development\git\d3dx12\engine\x64\debug\commandqueue.obj
 c:\development\git\d3dx12\output\engine.lib
 c:\development\git\d3dx12\engine\x64\debug\engine.tlog\cl.command.1.tlog

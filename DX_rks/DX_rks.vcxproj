@@ -72,25 +72,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(IntDir)</IntDir>
     <OutDir>$(SolutionDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)Engine\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Output\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(IntDir)</IntDir>
     <OutDir>$(SolutionDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)Engine\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Output\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>$(IntDir)</IntDir>
     <OutDir>$(SolutionDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)Engine\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Output\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>$(IntDir)</IntDir>
     <OutDir>$(SolutionDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)Engine\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Output\;$(LibraryPath)</LibraryPath>
