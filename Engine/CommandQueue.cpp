@@ -50,6 +50,8 @@ void CommandQueue::Init(ComPtr<ID3D12Device>		device,
 
 void CommandQueue::WaitSync()
 {
+	// 일감이 다 끝날때 까지 대기해주는 코드
+
 	// 펜스 값을 앞으로 이동하여 이 펜스 포인트까지 명령을 표시합니다.
 	// fence는 번호를 가지고 있음
 	_fenceValue++;
@@ -68,4 +70,53 @@ void CommandQueue::WaitSync()
 		// GPU가 현재 펜스 이벤트에 도달할 때까지 기다립니다.
 		::WaitForSingleObject(_fenceEvent, INFINITE);
 	}
+}
+
+void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
+{
+	_cmdAlloc->Reset();
+	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
+
+	// 전면 버퍼를 후면으로
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		_swapChain->GetCurrentBackBufferResource().Get(),
+		D3D12_RESOURCE_STATE_PRESENT, // 화면 출력 
+		D3D12_RESOURCE_STATE_RENDER_TARGET); // 외주 결과물
+
+	_cmdList->ResourceBarrier(1, &barrier);
+
+	// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
+	_cmdList->RSSetViewports(1, vp);
+	_cmdList->RSSetScissorRects(1, rect);
+
+	// Specify the buffers we are going to render to.
+	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _descHeap->GetBackBufferView();
+	_cmdList->ClearRenderTargetView(backBufferView, Colors::LightSteelBlue, 0, nullptr);
+	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, nullptr);
+}
+
+// 진짜 그려달라고 요청하게 되는 부분
+void CommandQueue::RenderEnd()
+{	// 후면 버퍼를 전면으로
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		_swapChain->GetCurrentBackBufferResource().Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET, // 외주 결과물
+		D3D12_RESOURCE_STATE_PRESENT); // 화면 출력
+
+	_cmdList->ResourceBarrier(1, &barrier);
+	_cmdList->Close();
+
+	// 커맨드 리스트 수행
+	ID3D12CommandList* cmdListArr[] = { _cmdList.Get() };
+	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+
+	_swapChain->Present();
+
+	// Wait until frame commands are complete.  This waiting is inefficient and is
+	// done for simplicity.  Later we will show how to organize our rendering code
+	// so we do not have to wait per frame.
+	WaitSync();
+
+	// 전면 버퍼와 후면 버퍼를 바꿈!
+	_swapChain->SwapIndex();
 }

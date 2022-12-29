@@ -5,6 +5,9 @@ public:
 
 	void Init(const WindowInfo& info);
 	void Render();
+
+	void RenderBegin(); // 요청사항들을 넣어주는 것
+	void RenderEnd(); // 쌓아 놓은 요청 사항들을 GPU로 넘기는 것
 	
 	void ResizeWindow(int32 width, int32 height);
 

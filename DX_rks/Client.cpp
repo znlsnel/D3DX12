@@ -8,6 +8,7 @@
 
 #define MAX_LOADSTRING 100
 
+WindowInfo GWindowInfo;
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
@@ -44,11 +45,15 @@ MyRegisterClass(hInstance);
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DXRKS));
 
     MSG msg;
+    GWindowInfo.width = 800;
+    GWindowInfo.height = 600;
+    GWindowInfo.windowed = true;
+
 
     // DX Programing ++++++++++++++++++++++++++++++++
  
     unique_ptr<Game> game = make_unique<Game>();
-    game->Init();
+    game->Init(GWindowInfo);
 
     // 기본 메시지 루프입니다:
     
@@ -129,7 +134,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
-
+   GWindowInfo.hWnd = hWnd;
    return TRUE;
 }
 

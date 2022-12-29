@@ -36,7 +36,7 @@ public:
 		return _swapChain; 
 	}
 
-	ComPtr<ID3D12Resource> GerRenderTarget(int32 index) { 
+	ComPtr<ID3D12Resource> GetRenderTarget(int32 index) { 
 		return _renderTargets[_backBufferIndex]; 
 	}
 
@@ -45,7 +45,7 @@ public:
 		return _backBufferIndex; 
 	}
 
-	ComPtr<ID3D12Resource> GerCurrentBackBufferResource() 
+	ComPtr<ID3D12Resource> GetCurrentBackBufferResource() 
 	{ 
 		return _renderTargets[_backBufferIndex];
 	}
