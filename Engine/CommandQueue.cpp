@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CommandQueue.h"
 #include "SwapChain.h"
-
+#include "Engine.h"
 CommandQueue::~CommandQueue()
 {
 	// event는 항상 마지막에 꺼줘야함 
@@ -69,6 +69,7 @@ void CommandQueue::WaitSync()
 	}
 }
 
+// 새롭게 그릴 buffer를 가져옴
 void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 {
 	_cmdAlloc->Reset();
@@ -79,6 +80,10 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 		_swapChain->GetBackRTVBuffer().Get(),
 		D3D12_RESOURCE_STATE_PRESENT, // 화면 출력 
 		D3D12_RESOURCE_STATE_RENDER_TARGET); // 외주 결과물
+
+	// 서명하겠다!
+	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	GEngine->GetConstantBuffer()->Clear();
 
 	_cmdList->ResourceBarrier(1, &barrier);
 
