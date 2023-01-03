@@ -55,7 +55,10 @@ void Game::Init(const WindowInfo& info)
 	vec[3].color = Vec4(0.f, 1.f, 0.f, 1.f);
 	vec[3].uv = Vec2(0.f, 1.f);
 
-
+	// 스탠실
+	// 구멍 뚫린 판에다 데고 색칠하는거
+	// Stencil이라고 하면 색상에 따라 스텐실 값을 지정해줘서
+	// 스텐실 값이 같은 애들끼리 묶어서 색칠하는거
 
 	vector<uint32> indexVec;
 	{
@@ -83,21 +86,30 @@ void Game::Update()
 
 	shader->Update();
 
+
 	{
 		Transform t;
-		t.offset = Vec4(0.f, 0.f, 0.f, 0.f);
+		t.offset = Vec4(0.25f, 0.25f, 0.2f, 0.f);
 		mesh->SetTransform(t);
+
 		mesh->SetTexture(texture);
+
 		mesh->Render();
 	}
 
-	/* {
+	{
 		Transform t;
-		t.offset = Vec4(0.f, 0.75f, 0.0f, 0.f);
+		t.offset = Vec4(0.f, 0.f, 0.3f, 0.f);
 		mesh->SetTransform(t);
 
+		mesh->SetTexture(texture);
+
 		mesh->Render();
-	}*/
+	}
+
+
+
+
 
 
 	GEngine->RenderEnd();
