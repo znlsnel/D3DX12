@@ -18,23 +18,23 @@ void CommandQueue::Init(ComPtr<ID3D12Device>		device,
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
 	device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_cmdQueue));
-	
-	// - D3D12_COMMAND_LIST_TYPE_DIRECT : GPU가 직접 실행하는 명령 목록
 	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, 
 									IID_PPV_ARGS(&_cmdAlloc));
-
-	// GPU가 하나인 시스템에서는 0으로
-	// DIRECT
-	// Allocator
-	// 초기 상태 (그리기 명령은 nullptr 지정)
 	device->CreateCommandList(0, 
 								D3D12_COMMAND_LIST_TYPE_DIRECT, 
 								_cmdAlloc.Get(), 
-								nullptr, IID_PPV_ARGS(&_cmdList));
-
-	// CommandList는 Close / Open 상태가 있는데
-	// Open 상태에서 Command를 넣다가 Close한 다음 제출하는 개념
+								nullptr, 
+								IID_PPV_ARGS(&_cmdList));
 	_cmdList->Close();
+
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+									IID_PPV_ARGS(&_resCmdAlloc));
+
+	device->CreateCommandList(0,
+								D3D12_COMMAND_LIST_TYPE_DIRECT,
+								_resCmdAlloc.Get(),
+								nullptr, 
+								IID_PPV_ARGS(&_resCmdList));
 
 	// CreateFence
 	// - CPU와 GPU의 동기화 수단으로 쓰인다
@@ -125,4 +125,17 @@ void CommandQueue::RenderEnd()
 
 	// 전면 버퍼와 후면 버퍼를 바꿈!
 	_swapChain->SwapIndex();
+}
+
+void CommandQueue::FlushResourceCommandQueue()
+{
+	_resCmdList->Close();
+
+	ID3D12CommandList* cmdListArr[] = { _resCmdList.Get() };
+	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+
+	WaitSync();
+
+	_resCmdAlloc->Reset();
+	_resCmdList->Reset(_resCmdAlloc.Get(), nullptr);
 }

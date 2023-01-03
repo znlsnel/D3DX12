@@ -13,12 +13,12 @@ public:
 
 	void RenderBegin(const D3D12_VIEWPORT* vp,
 					const D3D12_RECT* rect);
-
 	void RenderEnd();
+	void FlushResourceCommandQueue();
 
 	ComPtr<ID3D12CommandQueue> GetCmdQueue() { return _cmdQueue; }
 	ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return _cmdList; }
-
+	ComPtr<ID3D12GraphicsCommandList> GetResourceCmdList() { return	_resCmdList; }
 private:
 	// CommandQueue : DX12에 등장
 	// 외주를 요청할 때, 하나씩 요청하면 비효율적
@@ -27,6 +27,8 @@ private:
 	ComPtr<ID3D12CommandAllocator>		_cmdAlloc;  // 일감 할당자 (메모리 관리)
 	ComPtr<ID3D12GraphicsCommandList>		_cmdList; // 일감 목록
 
+	ComPtr<ID3D12CommandAllocator>		_resCmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList>		_resCmdList;
 	// Allocator가 메모리를 관리함 CommandQueue 클리어시 모든 데이터를 삭제하는 것이 라니라 vector처럼 capacity 값만 바꿈
 
 	// Fence : 울타리(?) 

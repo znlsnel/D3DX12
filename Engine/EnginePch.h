@@ -1,5 +1,9 @@
 #pragma once
 
+// std::byte 사용하지 않음
+#define _HAS_STD_BYTE 0
+
+
 // 각종 include
 #include <windows.h>
 #include <tchar.h>
@@ -10,6 +14,9 @@
 #include <list>
 #include <map>
 using namespace std;
+
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include "d3dx12.h"
 #include <d3d12.h>
@@ -23,12 +30,20 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
 
+#include <DirectXTex/DirectXTex.h>
+#include <DirectXTex/DirectXTex.inl>
 
 // 각종 lib
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "dxguid")
 #pragma comment(lib, "d3dcompiler")
+
+#ifdef _DEBUG
+#pragma comment(lib, "DirectXTex\\DirectXTex_debug.lib")
+#else
+#pragma comment(lib, "DirectXTex\\DirectXTex.lib")
+#endif
 
 // 각종 typedef
 using int8 = __int8;
@@ -44,7 +59,7 @@ using Vec3 = XMFLOAT3;
 using Vec4 = XMFLOAT4;
 using Matrix = XMMATRIX;
 
-enum class CBV_REGISTER
+enum class CBV_REGISTER : uint8
 {
 	b0,
 	b1,
@@ -55,11 +70,24 @@ enum class CBV_REGISTER
 	END // 0 ~ 4까지니까 END는 5 -- 즉 갯수를 나타냄
 };
 
+enum class SRV_REGISTER : uint8
+{
+	t0 = static_cast<uint8>(CBV_REGISTER::END),
+	t1,
+	t2,
+	t3,
+	t4,
+
+	END // 0 ~ 4까지니까 END는 5 -- 즉 갯수를 나타냄
+};
+
 enum
 {
 	SWAP_CHAIN_BUFFER_COUNT = 2,
 	CBV_REGISTER_COUNT = CBV_REGISTER::END,
-	REGISTER_COUNT = CBV_REGISTER::END, // 총 레지스터 갯수
+
+	SRV_REGISTER_COUNT = static_cast<uint8>(SRV_REGISTER::END) - static_cast<uint8>(CBV_REGISTER_COUNT),
+	REGISTER_COUNT = static_cast<uint8>(CBV_REGISTER_COUNT) + static_cast<uint8>(SRV_REGISTER_COUNT),
 };
 
 struct WindowInfo
@@ -74,6 +102,7 @@ struct Vertex
 {
 	Vec3 pos; // float가 3개 ( x, y, z )
 	Vec4 color; // float가 4개 ( r, g, b, a )
+	Vec2 uv;
 };
 
 struct Transform
@@ -84,6 +113,7 @@ struct Transform
 #define CMD_LIST GEngine->GetCmdQueue()->GetCmdList()
 #define ROOT_SIGNATURE GEngine->GetRootSignature()->GetSignature()
 #define DESC_HEAP GEngine->GetTableDescHeap()->GetDescriptorHeap()
+#define RESOURCE_CMD_LIST GEngine->GetCmdQueue()->GetResourceCmdList()
 
 //  unique_ptr<Engine> GEngine 라는게 나올거다~ 라는거
 extern unique_ptr<class Engine> GEngine;

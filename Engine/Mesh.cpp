@@ -83,6 +83,8 @@ void Mesh::Render()
 			GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
 
 		GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b0);
+
+		GEngine->GetTableDescHeap()->SetSRV(_tex->GetCpuHandle(), SRV_REGISTER::t0);
 	}
 
 	/* {
