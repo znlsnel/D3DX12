@@ -109,11 +109,13 @@ struct Transform
 {
 	Vec4 offset;
 };
-#define DEVICE GEngine->GetDevice()->GetDevice()
-#define CMD_LIST GEngine->GetCmdQueue()->GetCmdList()
-#define ROOT_SIGNATURE GEngine->GetRootSignature()->GetSignature()
-#define DESC_HEAP GEngine->GetTableDescHeap()->GetDescriptorHeap()
-#define RESOURCE_CMD_LIST GEngine->GetCmdQueue()->GetResourceCmdList()
+#define DEVICE				GEngine->GetDevice()->GetDevice()
+#define CMD_LIST			GEngine->GetCmdQueue()->GetCmdList()
+#define ROOT_SIGNATURE		GEngine->GetRootSignature()->GetSignature()
+#define DESC_HEAP			GEngine->GetTableDescHeap()->GetDescriptorHeap()
+#define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
+#define INPUT				GEngine->GetInput()
+#define DELTA_TIME			GEngine->GetTimer()->GetDeltaTime()
 
-//  unique_ptr<Engine> GEngine 라는게 나올거다~ 라는거
+
 extern unique_ptr<class Engine> GEngine;

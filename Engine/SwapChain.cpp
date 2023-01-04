@@ -12,9 +12,22 @@ void SwapChain::Init(const WindowInfo& info,
 	CreateRtv(device);
 }
 
+void SwapChain::Present()
+{
+	// (0, 0)에 그려줘~
+	_swapChain->Present(0, 0);
+}
+
+void SwapChain::SwapIndex()
+{
+	// _backBufferIndex가 BufferCount 범위를 안벗어나게끔 해주는 역할
+	_backBufferIndex = (_backBufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
+}
+
+
 void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
-	// 이전에 만든 정보를 날림
+	// 이전에 만든 정보 날린다
 	_swapChain.Reset();
 
 	DXGI_SWAP_CHAIN_DESC sd;
@@ -34,24 +47,13 @@ void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory> dxg
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // 전면 후면 버퍼 교체 시 이전 프레임 정보 버림
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	// SwapChain은 device가 아니라 dxgi에 있음
 	dxgi->CreateSwapChain(cmdQueue.Get(), &sd, &_swapChain);
 
 	for (int32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++)
 		_swapChain->GetBuffer(i, IID_PPV_ARGS(&_rtvBuffer[i]));
 }
 
-void SwapChain::Present()
-{
-	// (0, 0)에 그려줘~
-	_swapChain->Present(0, 0);
-}
 
-void SwapChain::SwapIndex()
-{
-	// _backBufferIndex가 BufferCount 범위를 안벗어나게끔 해주는 역할
-	_backBufferIndex = (_backBufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
-}
 
 
 
@@ -80,6 +82,6 @@ void SwapChain::CreateRtv(ComPtr<ID3D12Device> device)
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++)
 	{
 		_rtvHandle[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeapBegin, i * _rtvHeapSize);
-		device->CreateRenderTargetView(GetRenderTarget(i).Get(), nullptr, _rtvHandle[i]);
+		device->CreateRenderTargetView(_rtvBuffer[i].Get(), nullptr, _rtvHandle[i]);
 	}
 }
