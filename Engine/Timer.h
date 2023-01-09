@@ -3,6 +3,7 @@
 // 키보드를 누르고 있는지 떼고 있는지..
 class Timer
 {
+	DECLARE_SINGLE(Timer);
 public:
 	void Init();
 	void Update();

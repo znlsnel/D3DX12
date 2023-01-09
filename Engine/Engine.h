@@ -10,17 +10,13 @@
 #include "TableDescriptorHeap.h"
 #include "Texture.h"
 #include "DepthStencilBuffer.h"
-#include "Input.h"
-#include "Timer.h"
+
 
 class Engine
 {
 public:
 
 	void Init(const WindowInfo& info);
-	void Render();
-
-public:
 	void Update();
 
 public:
@@ -33,14 +29,12 @@ public:
 	shared_ptr<TableDescriptorHeap> GetTableDescHeap() {return  _tableDescHeap; }
 	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() {return  _depthStencilBuffer; }
 
-	shared_ptr<Input> GetInput() { return _input; }
-	shared_ptr<Timer> GetTimer() { return _timer; }
-
 	shared_ptr<ConstantBuffer> GetConstantBuffer(CONSTANT_BUFFER_TYPE type) { return _constantBuffers[static_cast<uint8>(type)]; }
 
 #pragma endregion
 
 public:
+	void Render();
 	void RenderBegin(); // 요청사항들을 넣어주는 것
 	void RenderEnd(); // 쌓아 놓은 요청 사항들을 GPU로 넘기는 것
 	
@@ -66,8 +60,6 @@ private:
 	shared_ptr<TableDescriptorHeap> _tableDescHeap = make_shared<TableDescriptorHeap>();
 	shared_ptr<DepthStencilBuffer> _depthStencilBuffer = make_shared<DepthStencilBuffer>();
 
-	shared_ptr<Input> _input = make_shared<Input>();
-	shared_ptr<Timer> _timer = make_shared<Timer>();
 
 	vector<shared_ptr<ConstantBuffer>> _constantBuffers;
 };
