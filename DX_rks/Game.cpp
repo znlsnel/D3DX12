@@ -14,5 +14,5 @@ void Game::Init(const WindowInfo& info)
 void Game::Update()
 {
 	GEngine->Update();
-
 }
+
