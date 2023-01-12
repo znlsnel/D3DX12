@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Transform.h"
+#include "Engine.h"
+#include "Camera.h"
 
 Transform::Transform() : Component(COMPONENT_TYPE::TRANSFORM)
 {
@@ -30,6 +32,17 @@ void Transform::FinalUpdate()
 	}
 }
 
+void Transform::PushData()
+{
 
-// CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&_transform, sizeof(_transform));
+	//TODO
+	Matrix matWVP = _matWorld * 
+					Camera::S_MatView * 
+					Camera::S_MatProjection;
+
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&matWVP, sizeof(matWVP));
+
+}
+
+
 

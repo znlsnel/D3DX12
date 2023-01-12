@@ -130,5 +130,9 @@ public:							\
 #define DELTA_TIME			GET_SINGLE(Timer)->GetDeltaTime()
 #define CONST_BUFFER(type)	GEngine->GetConstantBuffer(type)
 
+struct TransformParams
+{
+	Matrix matWVP;
+};
 
 extern unique_ptr<class Engine> GEngine;
