@@ -101,9 +101,17 @@ struct WindowInfo
 
 struct Vertex
 {
+	Vertex() {}
+
+	Vertex(Vec3 p, Vec2 u, Vec3 n, Vec3 t)
+		: pos(p), uv(u), normal(n), tangent(t)
+	{
+	}
+
 	Vec3 pos; // float가 3개 ( x, y, z )
-	Vec4 color; // float가 4개 ( r, g, b, a )
 	Vec2 uv;
+	Vec3 normal;
+	Vec3 tangent;
 };
 
 #define DECLARE_SINGLE(type)		\
@@ -117,7 +125,7 @@ public:							\
 		return &instance;			\
 	}							\
 
-#define GET_SINGLE(type)		type::GetInstance()
+#define GET_SINGLE(type)	type::GetInstance()
 
 
 

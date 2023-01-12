@@ -2,7 +2,16 @@
 #include "Material.h"
 #include "Engine.h"
 
-void Material::PushData()
+Material::Material() : Object(OBJECT_TYPE::MATERIAL)
+{
+
+}
+
+Material::~Material() 
+{
+
+}
+void Material::Update()
 {
 	// CBV ¾÷·Îµå
 	CONST_BUFFER(CONSTANT_BUFFER_TYPE::MATERIAL)->PushData(&_params, sizeof(_params));

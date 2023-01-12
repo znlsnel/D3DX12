@@ -20,7 +20,6 @@ Camera::~Camera()
 
 void Camera::FinalUpdate()
 {
-	// ¿ªÇà·Â
 	_matView = GetTransform()->GetLocalToWorldMatrix().Invert();
 
 	float width = static_cast<float>(GEngine->GetWindow().width);

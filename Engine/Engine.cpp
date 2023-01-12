@@ -23,14 +23,14 @@ void Engine::Init(const WindowInfo& info)
 	_tableDescHeap->Init(256);
 	_depthStencilBuffer->Init(_window);
 
-	GET_SINGLE(Input)->Init(info.hWnd);
-	GET_SINGLE(Timer)->Init();
 
 	CreateConstantBuffer(CBV_REGISTER::b0, sizeof(TransformParams), 256);
 	CreateConstantBuffer(CBV_REGISTER::b1, sizeof(MaterialParams), 256);
 
 	ResizeWindow(info.width, info.height);
 
+	GET_SINGLE(Input)->Init(info.hWnd);
+	GET_SINGLE(Timer)->Init();
 }
 
 void Engine::Update()

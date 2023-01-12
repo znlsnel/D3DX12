@@ -1,4 +1,5 @@
 #pragma once
+#include "Object.h"
 
 class Shader;
 class Texture;
@@ -17,13 +18,14 @@ struct MaterialParams
 
 	array<int32, MATERIAL_INT_COUNT> intParams = { 0, 0, 0, 0, 0 };
 	array<float, MATERIAL_FLOAT_COUNT> floatParams = { 0, 0, 0, 0, 0 };
-
-	
 };
 
-class Material
+class Material : public Object
 {
 public:
+	Material();
+	virtual ~Material();
+
 	shared_ptr<Shader> GetShader() { return _shader; }
 
 	void SetShader(shared_ptr<Shader> shader) { _shader = shader; }
@@ -31,7 +33,7 @@ public:
 	void SetFloat(uint8 index, float value) { _params.SetFloat(index, value); }
 	void SetTexture(uint8 index, shared_ptr<Texture> texture) { _textures[index] = texture; }
 
-	void PushData();
+	void Update();
 
 private:
 	shared_ptr<Shader>	_shader;

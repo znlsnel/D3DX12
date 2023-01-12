@@ -5,7 +5,7 @@
 #include "MonoBehaviour.h"
 #include "Camera.h"
 
-GameObject::GameObject()
+GameObject::GameObject() : Object(OBJECT_TYPE::GAMEOBJECT)
 {
 
 }
@@ -69,7 +69,6 @@ void GameObject::LateUpdate()
 		script->LateUpdate();
 	}
 }
-
 void GameObject::FinalUpdate()
 {
 	for (shared_ptr<Component>& component : _components)
@@ -80,33 +79,17 @@ void GameObject::FinalUpdate()
 }
 
 
-shared_ptr<Transform> GameObject::GetTransform()
-{
-	shared_ptr<Component> component = GetFixedComponent(COMPONENT_TYPE::TRANSFORM);
-	return static_pointer_cast<Transform>(component);
-}
-void GameObject::AddComponent(shared_ptr<Component> component)
-{
-	//
-	component->SetGameObject(shared_from_this());
-
-	uint8 index = static_cast<uint8>(component->GetType());
-	if (index < FIXED_COMPONENT_COUNT)
-	{
-		_components[index] = component;
-	}
-	else
-	{
-		//Component¸¦ MonoBehaviour Pointer·Î castÇÔ
-		_scripts.push_back(dynamic_pointer_cast<MonoBehaviour>(component));
-	}
-}
-
 shared_ptr<Component> GameObject::GetFixedComponent(COMPONENT_TYPE type)
 {
 	uint8 index = static_cast<uint8>(type);
 	assert(index < FIXED_COMPONENT_COUNT);
 	return _components[index];
+}
+
+shared_ptr<Transform> GameObject::GetTransform()
+{
+	shared_ptr<Component> component = GetFixedComponent(COMPONENT_TYPE::TRANSFORM);
+	return static_pointer_cast<Transform>(component);
 }
 
 shared_ptr<MeshRenderer> GameObject::GetMeshRenderer()
@@ -119,4 +102,19 @@ shared_ptr<Camera> GameObject::GetCamera()
 {
 	shared_ptr<Component> component = GetFixedComponent(COMPONENT_TYPE::CAMERA);
 	return static_pointer_cast<Camera>(component);
+}
+
+void GameObject::AddComponent(shared_ptr<Component> component)
+{
+	component->SetGameObject(shared_from_this());
+
+	uint8 index = static_cast<uint8>(component->GetType());
+	if (index < FIXED_COMPONENT_COUNT)
+	{
+		_components[index] = component;
+	}
+	else
+	{
+		_scripts.push_back(dynamic_pointer_cast<MonoBehaviour>(component));
+	}
 }
