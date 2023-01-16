@@ -8,14 +8,14 @@ void TableDescriptorHeap::Init(uint32 count)
 	_groupCount = count;
 
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.NumDescriptors = count * REGISTER_COUNT; // 총 view 갯수
+	desc.NumDescriptors = count * (REGISTER_COUNT - 1); // b0은 전역으로 빼줌
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
 	DEVICE->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_descHeap));
 
 	_handleSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	_groupSize = _handleSize * REGISTER_COUNT;
+	_groupSize = _handleSize * (REGISTER_COUNT - 1);
 }
 
 void TableDescriptorHeap::Clear()
@@ -48,7 +48,7 @@ void TableDescriptorHeap::CommitTable()
 	D3D12_GPU_DESCRIPTOR_HANDLE handle = _descHeap->GetGPUDescriptorHandleForHeapStart();
 	handle.ptr += _currentGroupIndex * _groupSize;
 	// 현재 사용하는 테이블을 사용해주세엽
-	CMD_LIST->SetGraphicsRootDescriptorTable(0, handle);
+	CMD_LIST->SetGraphicsRootDescriptorTable(1, handle);
 
 	_currentGroupIndex++;
 }
@@ -56,12 +56,13 @@ void TableDescriptorHeap::CommitTable()
 
 D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(uint8 reg)
 {
+	assert(reg > 0);
 	// 시작위치
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = _descHeap->GetCPUDescriptorHandleForHeapStart();
 
 	// += 현재 그룹 인덱스 * 그룹 크기
 	handle.ptr += _currentGroupIndex * _groupSize; // 현재 그룹으로 이동
-	handle.ptr += reg * _handleSize; // 현재 handle로 이동
+	handle.ptr += (reg - 1) * _handleSize; // 현재 handle로 이동
 	return handle;
 }
 

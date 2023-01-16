@@ -21,7 +21,7 @@ public:
 	const Matrix& GetLocalToWorldMatrix() { return _matWorld; }
 	
 	// 행렬에서 pos에 해당하는 부분만 꺼내옴
-	const Vec3& GetWorldPosition() { return _matWorld.Translation(); }
+	Vec3 GetWorldPosition() { return _matWorld.Translation(); }
 
 	Vec3 GetRight() { return _matWorld.Right(); }
 	Vec3 GetUp() { return _matWorld.Up(); }
