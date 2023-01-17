@@ -18,6 +18,9 @@ public:
 	const Vec3& GetLocalRotation() { return _localRotation; }
 	const Vec3& GetLocalScale() { return _localScale; }
 
+	// TEMP
+	float GetBoundingSphereRadius() { return max(max(_localScale.x, _localScale.y), _localScale.z); }
+
 	const Matrix& GetLocalToWorldMatrix() { return _matWorld; }
 	
 	// 행렬에서 pos에 해당하는 부분만 꺼내옴

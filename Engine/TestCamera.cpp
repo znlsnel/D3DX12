@@ -58,5 +58,5 @@ void TestCamera::LateUpdate()
 		GetTransform()->SetLocalRotation(rotation);
 	}
 
-	GetTransform()->SetLocalPosition(pos);
-}
+	GetTransform()->SetLocalPosition(pos);      
+} 
