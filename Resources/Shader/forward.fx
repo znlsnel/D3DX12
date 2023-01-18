@@ -1,8 +1,8 @@
 #ifndef _DEFAULT_HLSLI_
 #define _DEFAULT_HLSLI_
 
-#include "params.hlsli"
-#include "utils.hlsli"
+#include "params.fx"
+#include "utils.fx"
 
 struct VS_IN
 {
@@ -46,7 +46,7 @@ float4 PS_Main(VS_OUT input) : SV_Target
        if (g_tex_on_1) 
        {
                float3 tangentSpaceNormal = g_tex_1.Sample(g_sam_0, input.uv).xyz;
-
+                
                tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
                float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
                viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
@@ -58,8 +58,8 @@ float4 PS_Main(VS_OUT input) : SV_Target
         {
              LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
              totalColor.diffuse += color.diffuse;
-             totalColor.ambient += color.ambient;
-             totalColor.specular += color.specular;
+             totalColor.ambient += color.ambient; 
+             totalColor.specular += color.  specular;
         }
 
         color.xyz = (totalColor.diffuse.xyz * color.xyz)

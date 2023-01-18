@@ -1,7 +1,7 @@
 #ifndef _DEFAULT_HLSLI_
 #define _DEFAULT_HLSLI_
 
-#include "params.hlsli"
+#include "params.fx"
 
 struct VS_IN
 {
