@@ -1,5 +1,5 @@
-#ifndef _DEFAULT_HLSLI_
-#define _DEFAULT_HLSLI_
+#ifndef _DEFAULT_FX_
+#define _DEFAULT_FX_
 
 #include "params.fx"
 
