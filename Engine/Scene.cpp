@@ -109,7 +109,7 @@ void Scene::RenderFinal()
 {
 
 
-	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushData();
+	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render();
 }
 
@@ -128,7 +128,7 @@ void Scene::PushLightData()
 		lightParams.lightCount++;
 	}
 
-	CONST_BUFFER(CONSTANT_BUFFER_TYPE::GLOBAL)->SetGlobalData(&lightParams, sizeof(lightParams));
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::GLOBAL)->SetGraphicsGlobalData(&lightParams, sizeof(lightParams));
 }
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)

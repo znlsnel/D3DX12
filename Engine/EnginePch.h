@@ -78,9 +78,26 @@ enum class SRV_REGISTER : uint8
 	t2,
 	t3,
 	t4,
+	t5,
+	t6,
+	t7,
+	t8,
+	t9,
 
 	END // 0 ~ 4까지니까 END는 5 -- 즉 갯수를 나타냄
 };
+
+enum class UAV_REGISTER : uint8
+{
+	u0 = static_cast<uint8>(SRV_REGISTER::END),
+	u1,
+	u2,
+	u3,
+	u4,
+
+	END,
+};
+
 
 enum
 {
@@ -88,7 +105,9 @@ enum
 	CBV_REGISTER_COUNT = CBV_REGISTER::END,
 
 	SRV_REGISTER_COUNT = static_cast<uint8>(SRV_REGISTER::END) - static_cast<uint8>(CBV_REGISTER_COUNT),
-	REGISTER_COUNT = static_cast<uint8>(CBV_REGISTER_COUNT) + static_cast<uint8>(SRV_REGISTER_COUNT),
+	CBV_SRV_REGISTER_COUNT = static_cast<uint8>(CBV_REGISTER_COUNT) + static_cast<uint8>(SRV_REGISTER_COUNT),
+	UAV_REGISTER_COUNT = static_cast<uint8>(UAV_REGISTER::END) - CBV_SRV_REGISTER_COUNT,
+	TOTAL_REGISTER_COUNT = CBV_SRV_REGISTER_COUNT + UAV_REGISTER_COUNT
 };
 
 struct WindowInfo
@@ -130,10 +149,15 @@ public:							\
 
 
 #define DEVICE				GEngine->GetDevice()->GetDevice()
-#define CMD_LIST			GEngine->GetCmdQueue()->GetCmdList()
-#define ROOT_SIGNATURE		GEngine->GetRootSignature()->GetSignature()
-#define DESC_HEAP			GEngine->GetTableDescHeap()->GetDescriptorHeap()
-#define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
+
+#define GRAPHICS_CMD_LIST	GEngine->GetGraphicsCmdQueue()->GetGraphicsCmdList()
+#define RESOURCE_CMD_LIST	GEngine->GetGraphicsCmdQueue()->GetResourceCmdList()
+#define COMPUTE_CMD_LIST	GEngine->GetComputeCmdQueue()->GetComputeCmdList()
+
+#define GRAPHICS_ROOT_SIGNATURE		GEngine->GetRootSignature()->GetGraphicsRootSignature()
+#define COMPUTE_ROOT_SIGNATURE		GEngine->GetRootSignature()->GetComputeRootSignature()
+#define DESC_HEAP			GEngine->GetGraphicsDescHeap()->GetDescriptorHeap()
+
 #define INPUT				GET_SINGLE(Input)
 #define DELTA_TIME			GET_SINGLE(Timer)->GetDeltaTime()
 #define CONST_BUFFER(type)	GEngine->GetConstantBuffer(type)

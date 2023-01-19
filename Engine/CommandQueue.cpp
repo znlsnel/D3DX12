@@ -2,13 +2,18 @@
 #include "CommandQueue.h"
 #include "SwapChain.h"
 #include "Engine.h"
-CommandQueue::~CommandQueue()
+
+// ************************
+// GraphicsCommandQueue
+// ************************
+
+GraphicsCommandQueue::~GraphicsCommandQueue()
 {
 	// event는 항상 마지막에 꺼줘야함 
 	::CloseHandle(_fenceEvent);
 }
 
-void CommandQueue::Init(ComPtr<ID3D12Device>		device, 
+void GraphicsCommandQueue::Init(ComPtr<ID3D12Device>		device, 
 						shared_ptr<SwapChain>		swapChain)
 {
 	_swapChain = swapChain;
@@ -45,7 +50,7 @@ void CommandQueue::Init(ComPtr<ID3D12Device>		device,
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-void CommandQueue::WaitSync()
+void GraphicsCommandQueue::WaitSync()
 {
 	// 일감이 다 끝날때 까지 대기해주는 코드
 
@@ -70,7 +75,7 @@ void CommandQueue::WaitSync()
 }
 
 // 새롭게 그릴 buffer를 가져옴
-void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
+void GraphicsCommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 {
 	_cmdAlloc->Reset();
 	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
@@ -84,12 +89,12 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 		D3D12_RESOURCE_STATE_RENDER_TARGET); // 외주 결과물
 
 	// 서명하겠다!
-	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	_cmdList->SetGraphicsRootSignature(GRAPHICS_ROOT_SIGNATURE.Get());
 
 	GEngine->GetConstantBuffer(CONSTANT_BUFFER_TYPE::TRANSFORM)->Clear();
 	GEngine->GetConstantBuffer(CONSTANT_BUFFER_TYPE::MATERIAL)->Clear();
 
-	GEngine->GetTableDescHeap()->Clear();
+	GEngine->GetGraphicsDescHeap()->Clear();
 
 	ID3D12DescriptorHeap* descHeap = DESC_HEAP.Get();
 	_cmdList->SetDescriptorHeaps(1, &descHeap);
@@ -103,7 +108,7 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 }
 
 // 진짜 그려달라고 요청하게 되는 부분
-void CommandQueue::RenderEnd()
+void GraphicsCommandQueue::RenderEnd()
 {	// 후면 버퍼를 전면으로
 	int8 backIndex = _swapChain->GetBackBufferIndex();
 
@@ -121,16 +126,13 @@ void CommandQueue::RenderEnd()
 
 	_swapChain->Present();
 
-	// Wait until frame commands are complete.  This waiting is inefficient and is
-	// done for simplicity.  Later we will show how to organize our rendering code
-	// so we do not have to wait per frame.
 	WaitSync();
 
 	// 전면 버퍼와 후면 버퍼를 바꿈!
 	_swapChain->SwapIndex();
 }
 
-void CommandQueue::FlushResourceCommandQueue()
+void GraphicsCommandQueue::FlushResourceCommandQueue()
 {
 	_resCmdList->Close();
 
@@ -141,4 +143,60 @@ void CommandQueue::FlushResourceCommandQueue()
 
 	_resCmdAlloc->Reset();
 	_resCmdList->Reset(_resCmdAlloc.Get(), nullptr);
+}
+
+//-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0
+// ComputeCommandQueue
+//-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0-=0
+
+ComputeCommandQueue::~ComputeCommandQueue()
+{
+	::CloseHandle(_fenceEvent);
+}
+
+void ComputeCommandQueue::Init(ComPtr<ID3D12Device> device)
+{
+	D3D12_COMMAND_QUEUE_DESC computeQueueDesc = {};
+	computeQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+	computeQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+	device->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&_cmdQueue));
+
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&_cmdAlloc));
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, _cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&_cmdList));
+
+	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
+
+	// CreateFence
+	// - CPU와 GPU의 동기화 수단으로 쓰인다
+	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
+	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
+void ComputeCommandQueue::WaitSync()
+{
+	_fenceValue++;
+
+	_cmdQueue->Signal(_fence.Get(), _fenceValue);
+
+	if (_fence->GetCompletedValue() < _fenceValue)
+	{
+		_fence->SetEventOnCompletion(_fenceValue, _fenceEvent);
+		::WaitForSingleObject(_fenceEvent, INFINITE);
+	}
+}
+
+void ComputeCommandQueue::FlushComputeCommandQueue()
+{
+	_cmdList->Close();
+
+	ID3D12CommandList* cmdListArr[] = { _cmdList.Get() };
+	auto t = _countof(cmdListArr);
+	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+
+	WaitSync();
+
+	_cmdAlloc->Reset();
+	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
+
+	COMPUTE_CMD_LIST->SetComputeRootSignature(COMPUTE_ROOT_SIGNATURE.Get());
 }
