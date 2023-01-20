@@ -2,9 +2,10 @@
 #include "Component.h"
 #include "Object.h"
 
-class Transform;
-class MeshRenderer;
 class MonoBehaviour;
+class MeshRenderer;
+class ParticleSystem;
+class Transform;
 class Camera;
 class Light;
 
@@ -22,11 +23,11 @@ public:
 	void FinalUpdate();
 
 	shared_ptr<Component> GetFixedComponent(COMPONENT_TYPE type);
-	shared_ptr<Transform> GetTransform();
 	shared_ptr<MeshRenderer> GetMeshRenderer();
+	shared_ptr<ParticleSystem> GetParticleSystem();
+	shared_ptr<Transform> GetTransform();
 	shared_ptr<Camera> GetCamera();
 	shared_ptr<Light> GetLight();
-
 
 	void AddComponent(shared_ptr<Component> component);
 

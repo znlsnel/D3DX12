@@ -50,6 +50,7 @@ public:
 private:
 	vector<shared_ptr<GameObject>>	_vecDeferred;
 	vector<shared_ptr<GameObject>>	_vecForward;
+	vector<shared_ptr<GameObject>>	_vecParticle;
 
 public:
 	// TEMP

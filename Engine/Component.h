@@ -7,6 +7,7 @@ enum class COMPONENT_TYPE : uint8
 	MESH_RENDERER,
 	CAMERA,
 	LIGHT,
+	PARTICLE_SYSTEM,
 	// 
 	//
 	// MonoBehaviour이 가장 마지막에 와야함

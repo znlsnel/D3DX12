@@ -12,7 +12,7 @@ public:
 	virtual ~Mesh();
 
 	void Init(const vector<Vertex>& vertexBuffer, const vector<uint32>& indextbuffer);
-	void Render();
+	void Render(uint32 instanceCount = 1);
 
 
 private:
