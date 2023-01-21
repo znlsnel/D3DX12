@@ -41,7 +41,7 @@ cbuffer MATERIAL_PARAMS : register(b2)
 	int     g_int_1;
 	int     g_int_2;
 	int     g_int_3;
-	float   g_float_0;
+	float   g_float_0; 
 	float   g_float_1;
 	float   g_float_2;
 	float   g_float_3;
