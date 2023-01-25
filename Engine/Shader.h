@@ -6,8 +6,9 @@ enum class SHADER_TYPE : uint8
 	DEFERRED,
 	FORWARD,
 	LIGHTING,
-	COMPUTE,
 	PARTICLE,
+	COMPUTE,
+	SHADOW,
 };
 
 enum class RASTERIZER_TYPE : uint8
