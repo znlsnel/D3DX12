@@ -29,7 +29,7 @@ public:
 
 private:
 	ScratchImage			 			_image;
-	D3D12_RESOURCE_DESC				_desc;
+	D3D12_RESOURCE_DESC			_desc;
 	ComPtr<ID3D12Resource>			_tex2D;
 
 	ComPtr<ID3D12DescriptorHeap>	_srvHeap;
