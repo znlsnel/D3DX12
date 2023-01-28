@@ -23,9 +23,9 @@ void FBXLoader::LoadFbx(const wstring& path)
 	// 파일 데이터 로드
 	Import(path);
 
-	// Animation	
-	//LoadBones(_scene->GetRootNode());
-	//LoadAnimationInfo();
+	//Animation	
+	LoadBones(_scene->GetRootNode());
+	LoadAnimationInfo();
 
 	// 로드된 데이터 파싱 (Mesh/Material/Skin)
 	ParseNode(_scene->GetRootNode());

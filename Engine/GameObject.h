@@ -10,6 +10,7 @@ class Camera;
 class Light;
 class Terrain;
 class BaseCollider;
+class Animator;
 
 // 자기 자신에 대한 weak_ptr를 하나 들고있는 상태를 뜻함
 class GameObject : public Object, public enable_shared_from_this<GameObject>
@@ -32,6 +33,8 @@ public:
 	shared_ptr<Light> GetLight();
 	shared_ptr<Terrain> GetTerrain();
 	shared_ptr<BaseCollider> GetCollider();
+	shared_ptr<Animator> GetAnimator();
+
 
 	void AddComponent(shared_ptr<Component> component);
 

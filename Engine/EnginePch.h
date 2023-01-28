@@ -188,6 +188,14 @@ struct TransformParams
 	Matrix matViewInv;
 };
 
+struct AnimFrameParams
+{
+	Vec4	scale;
+	Vec4	rotation; // Quaternion
+	Vec4	translation;
+};
+
+
 extern unique_ptr<class Engine> GEngine;
 
 // Utils
